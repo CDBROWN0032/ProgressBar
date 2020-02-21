@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Threading;
 
 namespace ProgressBar
@@ -77,7 +78,7 @@ namespace ProgressBar
         static string SpinnerLoadBar(int index, int total)
         {
             if (index == total)
-                return "";
+                return string.Empty;
 
             switch (index % 6)
             {
