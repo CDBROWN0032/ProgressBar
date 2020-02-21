@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
+using System.IO;
 using System.Threading;
 
 namespace ProgressBar
 {
     class Program
-    {                
+    {
         static void Main(string[] args)
         {
             Run();
@@ -18,33 +17,50 @@ namespace ProgressBar
             CommandsList();
 
             string command;
-            do 
-            {                
+            do
+            {
                 command = Console.ReadLine();
                 switch (command)
                 {
-                    case Commands.ExitCommand:                         
-                        Environment.Exit(0); 
+                    case Commands.Exit:
+                        Environment.Exit(0);
                         break;
                     case Commands.TestBar:
-                        PercentComplete("Uploading Files...", 75, true); 
+                        PercentComplete("Uploading Files...", 75, true);
                         break;
                     case Commands.Help:
-                        CommandsList(); 
+                        CommandsList();
                         break;
                     case Commands.Directory:
-                        NotImplemented();
+                        Console.WriteLine("Provide file(s) directory:");
+                        GetFilesFromDirectory(Console.ReadLine());
+                        break;
+                    case Commands.TestDirectory:
+                        GetFilesFromDirectory(@"E:\_homeRepo\_testFile");
+                        break;
+                    case Commands.TestDirectoryFail:
+                        GetFilesFromDirectory(@"E:\_homeRepo\_thisFolderDoesNotExist");
                         break;
 
                     default:
                         Console.WriteLine("Invalid Command.\n");
                         break;
                 }
-
-
             }
-            while (command != Commands.ExitCommand);
+            while (command != Commands.Exit);
+        }
 
+        static void GetFilesFromDirectory(string directory)
+        {
+            if (Directory.Exists(directory))
+            {
+                var files = Directory.GetFiles(directory);
+                Console.WriteLine($"\nFiles found: {files.Length}");
+            }
+            else
+            {
+                Console.WriteLine($"\n!Error: Proivded directory path not found.\nDirectory:{directory}");
+            }
         }
 
         static void PercentComplete(string message, int total, bool test = false)
@@ -54,7 +70,7 @@ namespace ProgressBar
             string spinner;
             var location = "Place";
             var errorCount = 1;
-            
+
             Console.Clear();
 
             for (int i = 0; i <= total; i++)
@@ -70,7 +86,7 @@ namespace ProgressBar
 
                 }
 
-                if(test)
+                if (test)
                     Thread.Sleep(100);
             }
         }
@@ -82,13 +98,13 @@ namespace ProgressBar
 
             switch (index % 6)
             {
-                case 0: return "[    ]"; 
+                case 0: return "[    ]";
                 case 1: return "[=   ]";
-                case 2: return "[==  ]"; 
-                case 3: return "[=== ]"; 
-                case 4: return "[ ===]"; 
-                case 5: return "[  ==]"; 
-                case 6: return "[   =]"; 
+                case 2: return "[==  ]";
+                case 3: return "[=== ]";
+                case 4: return "[ ===]";
+                case 5: return "[  ==]";
+                case 6: return "[   =]";
                 default: return "spinner errored out";
             }
         }
@@ -105,10 +121,13 @@ namespace ProgressBar
         static void CommandsList()
         {
             Console.WriteLine("Commands:\n");
-            Console.WriteLine("help      .  .  .  show command list");
-            Console.WriteLine("testbar   .  .  .  test loading bar");
-            Console.WriteLine("directory .  .  .  provide file(s) directory");
-            Console.WriteLine("exit      .  .  .  exit app");
+            Console.WriteLine($"{Commands.TestDirectory}   .  directory drill test");
+            Console.WriteLine($"{Commands.TestDirectoryFail}  fail directory test");
+            Console.WriteLine($"{Commands.TestBar}   .  .  .  test loading bar");
+            Console.WriteLine("");
+            Console.WriteLine($"{Commands.Help}      .  .  .  show command list");
+            Console.WriteLine($"{Commands.Directory} .  .  .  provide file(s) directory");
+            Console.WriteLine($"{Commands.Exit}      .  .  .  exit app");
         }
 
         static void NotImplemented()
@@ -116,12 +135,14 @@ namespace ProgressBar
             Console.WriteLine("Command not Implemented.");
         }
 
-        public static class Commands
+        static class Commands
         {
-            public const string ExitCommand = "exit";
-            public const string TestBar = "testbar";
+            public const string Exit = "exit";
+            public const string TestBar = "test_bar";
             public const string Help = "help";
             public const string Directory = "directory";
+            public const string TestDirectory = "test_directory";
+            public const string TestDirectoryFail = "test_directory_fail";
         }
 
     }
